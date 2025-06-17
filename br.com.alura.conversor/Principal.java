@@ -1,21 +1,9 @@
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.Scanner;
-
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 public class Principal {
     public static void main(String[] args) {
         Scanner scan = new Scanner(System.in);
-
-        Double valor;
-        Double conversao;
-        String endereco;
-        String siglas;
+        ConsumoApi consumo = new ConsumoApi();
 
         String menu = """ 
 			***********************************************
@@ -43,35 +31,79 @@ public class Principal {
             System.out.println(menu);
             opcao = scan.nextInt();
 
-            System.out.println("Digite o valor que deseja converter: ");
-            valor = scan.nextDouble();
-
             try {
                 String key = "1beac8861b9e387841e20d02";
-
-                URL url = new URL(endereco);
-                HttpURLConnection request = (HttpURLConnection) url.openConnection();
-                request.connect();
-
-                BufferedReader reader = new BufferedReader(new InputStreamReader(request.getInputStream()));
-                StringBuilder jsonText = new StringBuilder();
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    jsonText.append(line);
-                }
-                reader.close();
-
-                JsonObject jsonObject = JsonParser.parseString(jsonText.toString()).getAsJsonObject();
-                double taxaDeCambio = jsonObject.getAsJsonObject("conversion_rates").get(siglas).getAsDouble();
-
-                conversao = valor * taxaDeCambio;
-                System.out.printf("R$ %.2f equivalem a US$ %.2f%n", valor, conversao);
-
-
                 switch(opcao){
                     case 1:
-                        endereco = "https://v6.exchangerate-api.com/v6/"+ key + "/latest/BRL/USD";
+                        String endereco = "https://v6.exchangerate-api.com/v6/"+ key + "/latest/BRL/USD";
+                        consumo.setEndereco(endereco);
                         String sigla = "USD";
+                        consumo.setSiglas(sigla);
+                        consumo.solicitarDados();
+                        consumo.conversorMoedas();
+                        break;
+
+                    case 2: 
+                        String endereco = "https://v6.exchangerate-api.com/v6/"+ key + "/latest/BRL/EUR";
+                        consumo.setEndereco(endereco);
+                        String sigla = "EUR";
+                        consumo.setSiglas(sigla);
+                        consumo.solicitarDados();
+                        consumo.conversorMoedas();
+                        break;
+
+                    case 3: 
+                        String endereco = "https://v6.exchangerate-api.com/v6/"+ key + "/latest/BRL/MXN";
+                        consumo.setEndereco(endereco);
+                        String sigla = "MXN";
+                        consumo.setSiglas(sigla);
+                        consumo.solicitarDados();
+                        consumo.conversorMoedas();
+                        break;
+
+                    case 4: 
+                        String endereco = "https://v6.exchangerate-api.com/v6/"+ key + "/latest/BRL/JPY";
+                        consumo.setEndereco(endereco);
+                        String sigla = "JPY";
+                        consumo.setSiglas(sigla);
+                        consumo.solicitarDados();
+                        consumo.conversorMoedas();
+                        break;
+                    
+                    case 5:
+                        String endereco = "https://v6.exchangerate-api.com/v6/"+ key + "/latest/USD/BRL";
+                        consumo.setEndereco(endereco);
+                        String sigla = "BRL";
+                        consumo.setSiglas(sigla);
+                        consumo.solicitarDados();
+                        consumo.conversorMoedas();
+                        break;
+
+                    case 6: 
+                        String endereco = "https://v6.exchangerate-api.com/v6/"+ key + "/latest/USD/EUR";
+                        consumo.setEndereco(endereco);
+                        String sigla = "EUR";
+                        consumo.setSiglas(sigla);
+                        consumo.solicitarDados();
+                        consumo.conversorMoedas();
+                        break;
+
+                    case 7: 
+                        String endereco = "https://v6.exchangerate-api.com/v6/"+ key + "/latest/USD/MXN";
+                        consumo.setEndereco(endereco);
+                        String sigla = "MXN";
+                        consumo.setSiglas(sigla);
+                        consumo.solicitarDados();
+                        consumo.conversorMoedas();
+                        break;
+
+                    case 8: 
+                        String endereco = "https://v6.exchangerate-api.com/v6/"+ key + "/latest/USD/JPY";
+                        consumo.setEndereco(endereco);
+                        String sigla = "JPY";
+                        consumo.setSiglas(sigla);
+                        consumo.solicitarDados();
+                        consumo.conversorMoedas();
                         break;
 
                     default:
@@ -90,4 +122,3 @@ public class Principal {
     }
 
 }
-
