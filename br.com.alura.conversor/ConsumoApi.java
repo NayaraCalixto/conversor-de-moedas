@@ -7,27 +7,33 @@ import java.util.Scanner;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 
 public class ConsumoApi {
-    private String endereco;
-    private String siglas;
+    private String moedaOrigem;
+    private String moedaDestino;
     private double valor;
-    private double conversao;
+    private double valorConvertido;
+    private String apiKey; 
 
-    public String getEndereco() {
-        return endereco;
+    public ConsumoApi(String apiKey) {
+        this.apiKey = apiKey;
     }
 
-    public void setEndereco(String endereco) {
-        this.endereco = endereco;
+    public String getMoedaOrigem() {
+        return moedaOrigem;
     }
 
-    public String getSiglas() {
-        return siglas;
+    public void setMoedaOrigem(String moedaOrigem) {
+        this.moedaOrigem = moedaOrigem;
     }
 
-    public void setSiglas(String siglas) {
-        this.siglas = siglas;
+    public String getMoedaDestino() {
+        return moedaDestino;
+    }
+
+    public void setMoedaDestino(String moedaDestino) {
+        this.moedaDestino = moedaDestino;
     }
 
     public double getValor() {
@@ -38,27 +44,26 @@ public class ConsumoApi {
         this.valor = valor;
     }
 
-    public double getConversao() {
-        return conversao;
+    public double getValorConvertido() {
+        return valorConvertido;
     }
 
-    public void setConversao(double conversao) {
-        this.conversao = conversao;
+    public void solicitarValor(Scanner scanner) {
+        System.out.println("\nDigite o valor que deseja converter: ");
+        this.valor = scanner.nextDouble();
     }
 
-    public void solicitarDados() {
-        Scanner scan = new Scanner(System.in);
-
-        System.out.println("Digite o valor que deseja converter: ");
-        valor = scan.nextDouble();
-
-    }
-
-    public void conversorMoedas() throws IOException {
+    public void realizarConversao() throws IOException, JsonSyntaxException {
+        String endereco = "https://v6.exchangerate-api.com/v6/" + apiKey + "/latest/" + moedaOrigem;
 
         URL url = new URL(endereco);
         HttpURLConnection request = (HttpURLConnection) url.openConnection();
         request.connect();
+
+        int responseCode = request.getResponseCode();
+        if (responseCode != HttpURLConnection.HTTP_OK) {
+            throw new IOException("Erro ao conectar à API: " + responseCode + " " + request.getResponseMessage());
+        }
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(request.getInputStream()));
         StringBuilder jsonText = new StringBuilder();
@@ -69,11 +74,15 @@ public class ConsumoApi {
         reader.close();
 
         JsonObject jsonObject = JsonParser.parseString(jsonText.toString()).getAsJsonObject();
-        double exchangeRate = jsonObject.getAsJsonObject("conversion_rates").get(siglas).getAsDouble();
 
-        conversao = valor * exchangeRate;
-        System.out.printf("R$ %.2f equivalem a US$ %.2f%n", valor, conversao);
+        if (!jsonObject.has("conversion_rates") || !jsonObject.getAsJsonObject("conversion_rates").has(moedaDestino)) {
+            throw new IllegalArgumentException("Não foi possível obter a taxa de câmbio para a moeda de destino: " + moedaDestino);
+        }
 
+        double taxaDeCambio = jsonObject.getAsJsonObject("conversion_rates").get(moedaDestino).getAsDouble();
+
+        this.valorConvertido = this.valor * taxaDeCambio;
+        System.out.printf("\nO valor de %.2f %s equivale a %.2f %s%n", this.valor, this.moedaOrigem, this.valorConvertido, this.moedaDestino);
     }
     
 }

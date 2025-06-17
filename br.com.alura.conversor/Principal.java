@@ -1,124 +1,111 @@
+import java.io.IOException;
+import java.util.InputMismatchException;
 import java.util.Scanner;
+
+import com.google.gson.JsonSyntaxException;
 
 public class Principal {
     public static void main(String[] args) {
         Scanner scan = new Scanner(System.in);
-        ConsumoApi consumo = new ConsumoApi();
+        String apiKey = "1beac8861b9e387841e20d02"; 
+        ConsumoApi consumoApi = new ConsumoApi(apiKey);
 
-        String menu = """ 
-			***********************************************
-			## Seja bem-vindo(a) ao Conversor de Moedas ##
+        String menu = """
+            ***********************************************
+            ## Seja bem-vindo(a) ao Conversor de Moedas ##
 
-			1) Real para Dólar.
-			2) Real para Euro.
-			3) Real para Peso Mexicano.
-			4) Real para Iene.
+            1) Real (BRL) para Dólar (USD).
+            2) Real (BRL) para Euro (EUR).
+            3) Real (BRL) para Peso Mexicano (MXN).
+            4) Real (BRL) para Iene (JPY).
 
-			5) Dólar para Real.
-			6) Dólar para Euro.
-			7) Dólar para Peso Mexicano.
-			8) Dólar para Iene.
+            5) Dólar (USD) para Real (BRL).
+            6) Dólar (USD) para Euro (EUR).
+            7) Dólar (USD) para Peso Mexicano (MXN).
+            8) Dólar (USD) para Iene (JPY).
 
-			9) Sair.
-			10) Continuar convertendo moedas.
-
-			Escolha uma opção válida:
-			***********************************************
-		"""; 
+            9) Sair.
+            ***********************************************
+            Escolha uma opção válida:
+            """;
 
         int opcao = 0;
-        while(opcao != 9) {
+        while (opcao != 9) {
             System.out.println(menu);
-            opcao = scan.nextInt();
-
             try {
-                String key = "1beac8861b9e387841e20d02";
-                switch(opcao){
-                    case 1:
-                        String endereco = "https://v6.exchangerate-api.com/v6/"+ key + "/latest/BRL/USD";
-                        consumo.setEndereco(endereco);
-                        String sigla = "USD";
-                        consumo.setSiglas(sigla);
-                        consumo.solicitarDados();
-                        consumo.conversorMoedas();
-                        break;
+                opcao = scan.nextInt();
 
-                    case 2: 
-                        String endereco = "https://v6.exchangerate-api.com/v6/"+ key + "/latest/BRL/EUR";
-                        consumo.setEndereco(endereco);
-                        String sigla = "EUR";
-                        consumo.setSiglas(sigla);
-                        consumo.solicitarDados();
-                        consumo.conversorMoedas();
-                        break;
+                if (opcao >= 1 && opcao <= 8) {
+                    // Refatoração para evitar duplicação de código
+                    String moedaOrigem = "";
+                    String moedaDestino = "";
 
-                    case 3: 
-                        String endereco = "https://v6.exchangerate-api.com/v6/"+ key + "/latest/BRL/MXN";
-                        consumo.setEndereco(endereco);
-                        String sigla = "MXN";
-                        consumo.setSiglas(sigla);
-                        consumo.solicitarDados();
-                        consumo.conversorMoedas();
-                        break;
+                    switch (opcao) {
+                        case 1:
+                            moedaOrigem = "BRL";
+                            moedaDestino = "USD";
+                            break;
+                        case 2:
+                            moedaOrigem = "BRL";
+                            moedaDestino = "EUR";
+                            break;
+                        case 3:
+                            moedaOrigem = "BRL";
+                            moedaDestino = "MXN";
+                            break;
+                        case 4:
+                            moedaOrigem = "BRL";
+                            moedaDestino = "JPY";
+                            break;
+                        case 5:
+                            moedaOrigem = "USD";
+                            moedaDestino = "BRL";
+                            break;
+                        case 6:
+                            moedaOrigem = "USD";
+                            moedaDestino = "EUR";
+                            break;
+                        case 7:
+                            moedaOrigem = "USD";
+                            moedaDestino = "MXN";
+                            break;
+                        case 8:
+                            moedaOrigem = "USD";
+                            moedaDestino = "JPY";
+                            break;
+                    }
 
-                    case 4: 
-                        String endereco = "https://v6.exchangerate-api.com/v6/"+ key + "/latest/BRL/JPY";
-                        consumo.setEndereco(endereco);
-                        String sigla = "JPY";
-                        consumo.setSiglas(sigla);
-                        consumo.solicitarDados();
-                        consumo.conversorMoedas();
-                        break;
-                    
-                    case 5:
-                        String endereco = "https://v6.exchangerate-api.com/v6/"+ key + "/latest/USD/BRL";
-                        consumo.setEndereco(endereco);
-                        String sigla = "BRL";
-                        consumo.setSiglas(sigla);
-                        consumo.solicitarDados();
-                        consumo.conversorMoedas();
-                        break;
+                    consumoApi.setMoedaOrigem(moedaOrigem);
+                    consumoApi.setMoedaDestino(moedaDestino);
+                    consumoApi.solicitarValor(scan); 
+                    consumoApi.realizarConversao();
 
-                    case 6: 
-                        String endereco = "https://v6.exchangerate-api.com/v6/"+ key + "/latest/USD/EUR";
-                        consumo.setEndereco(endereco);
-                        String sigla = "EUR";
-                        consumo.setSiglas(sigla);
-                        consumo.solicitarDados();
-                        consumo.conversorMoedas();
-                        break;
-
-                    case 7: 
-                        String endereco = "https://v6.exchangerate-api.com/v6/"+ key + "/latest/USD/MXN";
-                        consumo.setEndereco(endereco);
-                        String sigla = "MXN";
-                        consumo.setSiglas(sigla);
-                        consumo.solicitarDados();
-                        consumo.conversorMoedas();
-                        break;
-
-                    case 8: 
-                        String endereco = "https://v6.exchangerate-api.com/v6/"+ key + "/latest/USD/JPY";
-                        consumo.setEndereco(endereco);
-                        String sigla = "JPY";
-                        consumo.setSiglas(sigla);
-                        consumo.solicitarDados();
-                        consumo.conversorMoedas();
-                        break;
-
-                    default:
-                    System.out.println("Opção inválida!");
-
+                } else if (opcao != 9) { 
+                    System.out.println("Opção inválida! Por favor, escolha uma opção entre 1 e 9.");
                 }
 
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (InputMismatchException e) {
+                System.out.println("Entrada inválida. Por favor, digite um número.");
+                scan.next(); 
+            } catch (IOException e) {
+                System.err.println("Erro de comunicação com a API: " + e.getMessage());
+            } catch (JsonSyntaxException e) {
+                System.err.println("Erro ao processar a resposta da API (JSON inválido): " + e.getMessage());
+            } catch (IllegalArgumentException e) {
+                System.err.println("Erro: " + e.getMessage());
+            } catch (Exception e) { 
+                System.err.println("Ocorreu um erro inesperado: " + e.getMessage());
+            } finally {
+                // Adiciona uma pausa para o usuário ler a mensagem antes de exibir o menu novamente
+                if (opcao != 9) {
+                    System.out.println("\nPressione Enter para continuar...");
+                    scan.nextLine(); 
+                    scan.nextLine(); 
+                }
             }
-            
-
         }
-        
-        scan.close();
+        System.out.println("Obrigado por usar o Conversor de Moedas! Até logo.");
+        scan.close(); 
     }
 
 }
